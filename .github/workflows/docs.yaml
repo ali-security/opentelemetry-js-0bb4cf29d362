@@ -1,14 +1,14 @@
 name: Deploy API Documentation
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   build-and-deploy:
+    timeout-minutes: 30
     permissions:
       contents: write # required for deploying documentation to gh-pages
     runs-on: ubuntu-latest

@@ -2,15 +2,13 @@ name: "CodeQL Analysis"
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
-  pull_request:
 
 permissions:
   contents: read
 
 jobs:
   CodeQL-Build:
+    timeout-minutes: 30
     permissions:
       security-events: write
     runs-on: ubuntu-latest

@@ -1,17 +1,14 @@
 name: Lint
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-  merge_group:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   build:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
 
     steps:

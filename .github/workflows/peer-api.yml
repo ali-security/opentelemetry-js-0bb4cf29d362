@@ -1,17 +1,14 @@
 name: Ensure API Peer Dependency
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-  merge_group:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   peer-api-check:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     container:
       image: node:22

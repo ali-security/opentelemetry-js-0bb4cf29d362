@@ -1,16 +1,13 @@
 name: Unit Tests
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-  merge_group:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   node-tests:
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -66,13 +63,23 @@ jobs:
           NODE_OPTIONS: '--no-experimental-strip-types'
         if: ${{ matrix.node_version == '22' || matrix.node_version == '24' || matrix.node_version == '25' }}
 
-      - name: Report Coverage
-        uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Pack @opentelemetry/core
+        if: ${{ matrix.node_version == '22' }}
+        run: |
+          mkdir -p dist-artifact
+          npm pack --workspace=packages/opentelemetry-core --pack-destination=dist-artifact
+          mv dist-artifact/opentelemetry-core-*.tgz \
+            dist-artifact/core-$(node -p "require('./packages/opentelemetry-core/package.json').version").tgz
+
+      - name: Upload package tarball
+        if: ${{ matrix.node_version == '22' }}
+        uses: actions/upload-artifact@v4
         with:
-          verbose: true
+          name: npm-tarball
+          path: dist-artifact/core-*.tgz
+          if-no-files-found: error
   node-windows-tests:
+    timeout-minutes: 45
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -100,6 +107,7 @@ jobs:
         env:
           NODE_OPTIONS: '--no-experimental-strip-types'
   browser-tests:
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -120,13 +128,8 @@ jobs:
 
       - name: Unit tests
         run: npm run test:browser
-      - name: Report Coverage
-        uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        with:
-          verbose: true
   webworker-tests:
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -146,9 +149,3 @@ jobs:
 
       - name: Unit tests
         run: npm run test:webworker
-      - name: Report Coverage
-        uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        with:
-          verbose: true

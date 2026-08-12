@@ -1,12 +1,12 @@
 name: SBOM
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
 
 permissions: read-all
 
 jobs:
   generate-sboms:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -57,6 +57,7 @@ jobs:
           path: ./sbom.zip
 
   add-release-artifact:
+    timeout-minutes: 30
     needs: generate-sboms
     runs-on: ubuntu-latest
     permissions:

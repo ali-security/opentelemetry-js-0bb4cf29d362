@@ -1,13 +1,13 @@
 name: 'Close stale issues and PRs'
 on:
-  schedule:
-    - cron: '30 6 * * 1'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   stale:
+    timeout-minutes: 30
     permissions:
       issues: write # required for closing stale issues
       pull-requests: write # required for closing stale PRs
